@@ -1,7 +1,6 @@
-
-
 import { GoogleGenAI, Modality, GenerateContentResponse } from "@google/genai";
 import { Suggestion, GroundingSource } from "../types";
+import { getApiKey } from './apiKeyService';
 
 interface AiResponse {
   text: string;
@@ -9,12 +8,15 @@ interface AiResponse {
   groundingSources?: GroundingSource[];
 }
 
-const getAiClient = () => {
-    if (!process.env.API_KEY) {
-        console.warn("API_KEY environment variable not set. Using mock service.");
+const getAiClient = async () => {
+    try {
+        const apiKey = await getApiKey();
+        return new GoogleGenAI({ apiKey });
+    } catch (error) {
+        console.warn((error as Error).message);
+        console.warn("API_KEY environment variable not set or fetchable. Using mock service.");
         return null;
     }
-    return new GoogleGenAI({ apiKey: process.env.API_KEY });
 };
 
 // ===================== MOCK IMPLEMENTATION =====================
@@ -42,7 +44,7 @@ const getUserLocation = (): Promise<{ latitude: number, longitude: number } | nu
 // ===================== API IMPLEMENTATIONS =====================
 
 export const generateAiResponse = async (prompt: string, systemInstruction?: string): Promise<AiResponse> => {
-  const ai = getAiClient();
+  const ai = await getAiClient();
   if (!ai) return generateMockResponse(prompt);
 
   try {
@@ -77,7 +79,7 @@ export const generateAiResponse = async (prompt: string, systemInstruction?: str
 };
 
 export const generateImage = async (prompt: string): Promise<string> => {
-    const ai = getAiClient();
+    const ai = await getAiClient();
     if (!ai) {
         await new Promise(r => setTimeout(r, 1000));
         return "https://picsum.photos/seed/mock-image/512/512"; // mock response
@@ -99,7 +101,7 @@ export const generateImage = async (prompt: string): Promise<string> => {
 };
 
 export const editImage = async (prompt: string, imageBase64: string, mimeType: string): Promise<string> => {
-    const ai = getAiClient();
+    const ai = await getAiClient();
     if (!ai) {
         await new Promise(r => setTimeout(r, 1000));
         return imageBase64; // mock response
@@ -129,15 +131,11 @@ export const editImage = async (prompt: string, imageBase64: string, mimeType: s
 };
 
 export const generateVideo = async (prompt: string, imageBase64: string, mimeType: string, aspectRatio: '16:9' | '9:16'): Promise<string> => {
-    // Per Veo guidelines, create a new instance right before the call
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-    if (!process.env.API_KEY) {
-        await new Promise(r => setTimeout(r, 1000));
-        // Return a stock video as a mock response
-        return "https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4";
-    }
-
     try {
+        const apiKey = await getApiKey();
+        // Per Veo guidelines, create a new instance right before the call
+        const ai = new GoogleGenAI({ apiKey });
+        
         let operation = await ai.models.generateVideos({
             model: 'veo-3.1-fast-generate-preview',
             prompt,
@@ -157,11 +155,18 @@ export const generateVideo = async (prompt: string, imageBase64: string, mimeTyp
         const downloadLink = operation.response?.generatedVideos?.[0]?.video?.uri;
         if (!downloadLink) throw new Error("Video generation succeeded but no URI was returned.");
         
-        const videoResponse = await fetch(`${downloadLink}&key=${process.env.API_KEY}`);
+        const videoResponse = await fetch(`${downloadLink}&key=${apiKey}`);
         const videoBlob = await videoResponse.blob();
         return URL.createObjectURL(videoBlob);
     } catch (error) {
         console.error("Video generation error:", error);
+        
+        // Handle API key fetch failure specifically for mock response
+        if (error instanceof Error && error.message.includes("Could not retrieve API key")) {
+            await new Promise(r => setTimeout(r, 1000));
+            return "https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4";
+        }
+        
         if (error instanceof Error && error.message.includes("Requested entity was not found")) {
             throw new Error("API key is invalid. Please select a valid key.");
         }
@@ -170,7 +175,7 @@ export const generateVideo = async (prompt: string, imageBase64: string, mimeTyp
 };
 
 export const generateSpeech = async (text: string): Promise<string> => {
-    const ai = getAiClient();
+    const ai = await getAiClient();
     if (!ai) throw new Error("AI client not available");
 
     try {
