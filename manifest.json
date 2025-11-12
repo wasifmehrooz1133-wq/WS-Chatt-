@@ -1,0 +1,17 @@
+
+{
+  "short_name": "WS Chatt",
+  "name": "WS Chatt",
+  "description": "A WhatsApp-style MVP chat application that allows a user to have a conversation with an AI assistant, with conversations persisted in local storage.",
+  "icons": [
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cGF0aCBmaWxsPSIjMDBBODg0IiBkPSJNMTAgMTAgSCA5MCBWIDcwIEggMzAgTCAxMCA5MCBWIDcwIEggMTAgWiIvPjwvc3ZnPg==",
+      "type": "image/svg+xml",
+      "sizes": "192x192 512x512"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#008069",
+  "background_color": "#F0F2F5"
+}

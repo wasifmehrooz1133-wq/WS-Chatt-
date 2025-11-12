@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WS Chatt</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#008069">
+    <style>
+      :root {
+        --primary-color: #008069;
+        --primary-color-dark: #005c4b;
+        --primary-color-light: #00A884;
+        --primary-color-lightest: #e6f2f0;
+        --primary-text-color: #008069;
+      }
+
+      .bg-primary { background-color: var(--primary-color); }
+      .bg-primary-light { background-color: var(--primary-color-light); }
+      .bg-primary-lightest { background-color: var(--primary-color-lightest); }
+      .hover\:bg-primary-dark:hover { background-color: var(--primary-color-dark); }
+      .text-primary { color: var(--primary-text-color); }
+      .border-primary { border-color: var(--primary-color); }
+      .fill-primary { fill: var(--primary-color); }
+      .ring-primary { --tw-ring-color: var(--primary-color); }
+
+      body {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      .chat-background {
+        background-color: #e5ddd5;
+        background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAARMAAAARMAAQMAAAAImV63AAAABlBMVEXd3d3d3d3d3d0AURfOAAAAAXRSTlMAQObYZgAAAElJREFUeNpjYKAXYCJgYPhj0AZ4yMAwz8A452B434CgAyyYgWEMnAw/CGEMmAFwZpgBSGNggM4gSgYGAg5gBh1YpBwGABGNDVEgs/1YAAAAAElFTSuQmCC");
+        opacity: 0.06;
+      }
+      .no-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+      /* ACCESSIBILITY STYLES START */
+      .high-contrast body,
+      .high-contrast .bg-\[\#F0F2F5\],
+      .high-contrast .bg-\[\#F9F9F9\],
+      .high-contrast .bg-white {
+        background-color: #ffffff;
+      }
+      .high-contrast .hover\:bg-gray-100:hover {
+        background-color: #d1d5db;
+      }
+      .high-contrast .text-gray-400,
+      .high-contrast .text-gray-500,
+      .high-contrast .text-gray-600 {
+        color: #111827; /* Near black */
+      }
+      .high-contrast .text-gray-700,
+      .high-contrast .text-gray-800 {
+        color: #000000;
+      }
+      .high-contrast .border-gray-200,
+      .high-contrast .border-gray-300 {
+        border-color: #6b7280; /* Darker gray border */
+      }
+      .high-contrast .bg-primary {
+        background-color: #004d40;
+      }
+      .high-contrast .bg-primary-light {
+        background-color: #00695c;
+      }
+      .high-contrast .text-primary {
+        color: #004d40;
+      }
+      .high-contrast .bg-\[\#DCF8C6\] { /* user message bubble */
+        background-color: #a5d6a7;
+      }
+      .no-animations .animate-fade-in,
+      .no-animations .animate-fade-out,
+      .no-animations .animate-slide-in,
+      .no-animations .animate-bounce,
+      .no-animations .animate-pulse,
+      .no-animations .transition-transform,
+      .no-animations .transition-colors,
+      .no-animations .transition-opacity,
+      .no-animations .transition-all {
+        animation: none !important;
+        transition: none !important;
+      }
+      /* ACCESSIBILITY STYLES END */
+      @keyframes fadeIn {
+        from { opacity: 0; transform: scale(0.95) translateY(10px); }
+        to { opacity: 1; transform: scale(1) translateY(0); }
+      }
+      .animate-fade-in {
+        animation: fadeIn 1s ease-out forwards;
+      }
+      @keyframes fadeOut {
+        from {
+          opacity: 1;
+          transform: scale(1);
+          max-height: 100px; /* Approximate max height */
+        }
+        to {
+          opacity: 0;
+          transform: scale(0.9);
+          max-height: 0;
+          padding-top: 0;
+          padding-bottom: 0;
+          margin-top: 0;
+          margin-bottom: 0;
+        }
+      }
+      .animate-fade-out {
+        animation: fadeOut 0.3s ease-out forwards;
+        overflow: hidden;
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.28.0"
+  }
+}
+</script>
+</head>
+  <body class="bg-gray-200">
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').then(registration => {
+            console.log('ServiceWorker registration successful with scope: ', registration.scope);
+          }, err => {
+            console.log('ServiceWorker registration failed: ', err);
+          });
+        });
+      }
+    </script>
+  </body>
+</html>
